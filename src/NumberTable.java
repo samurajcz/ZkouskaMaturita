@@ -61,22 +61,48 @@ public class NumberTable extends JTable {
         updateModel();
     }
 
-    private int calculateResult(int a, String oper, int b) {
-        if (oper.equals("+")) {
-            return a + b;
-        } else if (oper.equals("-")) {
-            return a - b;
-        } else if (oper.equals("*")) {
-            return a * b;
-        } else if (oper.equals("/")) {
-            return a / b;
-        } else {
-            if (oper.isEmpty()) {
-                return 0;
-            } else {
-                throw new IllegalArgumentException("Invalid operator: " + oper);
+    public int calculateResult() {
+        int correctResults = 0;
+
+        for (ItemRow item : arrayList) {
+            int calculatedResult = switch (item.getOperator()) {
+                case "+" -> item.getA() + item.getB();
+                case "-" -> item.getA() - item.getB();
+                case "*" -> item.getA() * item.getB();
+                case "/" -> item.getA() / item.getB();
+                default -> 0;
+            };
+
+            if (calculatedResult == item.getResult()) {
+                correctResults++;
             }
         }
+
+        return correctResults;
+    }
+
+    public int calculateResultIncorrect() {
+        int incorrectResults = 0;
+
+        for (ItemRow item : arrayList) {
+            int calculatedResult = 0;
+
+            if (item.getOperator().equals("+")) {
+                calculatedResult = item.getA() + item.getB();
+            } else if (item.getOperator().equals("-")) {
+                calculatedResult = item.getA() - item.getB();
+            } else if (item.getOperator().equals("*")) {
+                calculatedResult = item.getA() * item.getB();
+            } else if (item.getOperator().equals("/")) {
+                calculatedResult = item.getA() / item.getB();
+            }
+
+            if (calculatedResult != item.getResult()) {
+                incorrectResults++;
+            }
+        }
+
+        return incorrectResults;
     }
 
     private void init() {

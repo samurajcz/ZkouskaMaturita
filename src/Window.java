@@ -34,9 +34,21 @@ public class Window extends JFrame {
 
         panel.add(new JScrollPane(numberTable));
 
+        JButton buttonCal = new JButton("Calculate");
+        panel.add(buttonCal);
+        JLabel correctlyLabel = new JLabel("Correctly: ");
+        panel.add(correctlyLabel);
+        JLabel incorrectLabel = new JLabel("Incorrect: ");
+        panel.add(incorrectLabel);
+
         button.addActionListener(e -> {
             System.out.println(textField.getText());
             numberTable.addToList(textField.getText());
+        });
+
+        button.addActionListener(e -> {
+            correctlyLabel.setText("Correctly: " + numberTable.calculateResult());
+            incorrectLabel.setText("Incorrect: " + numberTable.calculateResultIncorrect());
         });
 
 
