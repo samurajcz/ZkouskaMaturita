@@ -11,6 +11,7 @@ public class Window extends JFrame {
     String infoLabelValue = "Vložte pole JSON do textfieldu";
 
     private void init(int width, int height) {
+        // Inicializace okna
         setTitle("Zkouška");
         setVisible(true);
         setBackground(Color.white);

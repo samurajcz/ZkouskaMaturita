@@ -8,18 +8,21 @@ import java.util.regex.Pattern;
 
 public class NumberTable extends JTable {
 
+    // Vytvoření listu s typem ItemRow který má v sobě int a, b, result a String operator
     private ArrayList<ItemRow> arrayList = new ArrayList<>();
 
+    // Kontruktor třídy NumberTable
     public NumberTable() {
         init();
     }
 
     public void addToList(String value) {
-
+        // Regulární výraz pro shodu s hodnotou vstupu
         Pattern pattern = Pattern.compile("\\{\"a\":(\\d+),\"oper\":\"([^\"]+)\",\"b\":(\\d+),\"vysl\":(\\d+)}");
         Matcher matcher = pattern.matcher(value);
 
         while (matcher.find()) {
+            // Extrahování hodnot z nalezených skupin
             int a = Integer.parseInt(matcher.group(1));
             String oper = matcher.group(2);
             int b = Integer.parseInt(matcher.group(3));
@@ -32,6 +35,7 @@ public class NumberTable extends JTable {
         updateModel();
     }
 
+    // Vypočítá kolik výsledků je správně
     public int calculateResult() {
         int correctResults = 0;
 
@@ -52,10 +56,12 @@ public class NumberTable extends JTable {
         return correctResults;
     }
 
+    // Získá velikost listu
     public int arraySize() {
         return arrayList.size();
     }
 
+    // Vypočítá kolik výsledků je správně
     public int calculateResultIncorrect() {
         int incorrectResults = 0;
 
@@ -77,17 +83,15 @@ public class NumberTable extends JTable {
     }
 
     private void init() {
-
-        String[] columnNames = {"Index", "Number 1", "Operator", "Number 2", "Result"};
-
+        // Inicializace tabulky
+        String[] columnNames = {"Index", "Číslo 1", "Operátor", "Číslo 2", "Výsledek"};
         Object[][] data = new Object[0][columnNames.length];
-
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
-
         setModel(model);
     }
 
     private void updateModel() {
+        // Aktualizace modelu tabulky
         DefaultTableModel model = (DefaultTableModel) getModel();
         model.setRowCount(0);
 
@@ -102,6 +106,8 @@ public class NumberTable extends JTable {
         }
     }
 
+
+    // Přepíše / upraví metodu aby při renderování dat změnil řádek barvu
     @Override
     public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
         Component component = super.prepareRenderer(renderer, row, column);
