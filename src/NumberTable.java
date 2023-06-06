@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NumberTable extends JTable {
 
@@ -11,51 +13,18 @@ public class NumberTable extends JTable {
     }
 
     public void addToList(String value) {
-        System.out.println("přidáno do listu: " + value);
 
-        String jsonString = value;
+        Pattern pattern = Pattern.compile("\\{\"a\":(\\d+),\"oper\":\"([^\"]+)\",\"b\":(\\d+),\"vysl\":(\\d+)}");
+        Matcher matcher = pattern.matcher(value);
 
-        // Remove leading and trailing square brackets from the JSON string
-        value = value.substring(1, value.length() - 1);
+        while (matcher.find()) {
+            int a = Integer.parseInt(matcher.group(1));
+            String oper = matcher.group(2);
+            int b = Integer.parseInt(matcher.group(3));
+            int vysl = Integer.parseInt(matcher.group(4));
 
-        // Split the JSON string into individual objects
-        String[] objects = value.split("\\},\\{");
-
-        for (String object : objects) {
-            // Remove curly braces from the object string
-            object = object.replace("{", "").replace("}", "");
-
-            // Split the object string into key-value pairs
-            String[] keyValuePairs = object.split(",");
-
-            int a = 0, b = 0, vysl = 0;
-            String oper = "";
-
-            for (String keyValuePair : keyValuePairs) {
-                // Split the key-value pair into key and value
-                String[] parts = keyValuePair.split(":");
-
-                String key = parts[0].trim();
-                String valueStr = parts[1].trim();
-
-                // Remove quotes from the value string
-                valueStr = valueStr.replace("\"", "");
-
-                if (key.equals("a")) {
-                    a = Integer.parseInt(valueStr);
-                } else if (key.equals("oper")) {
-                    oper = valueStr;
-                    if (oper.isEmpty()) {
-                        oper = "+"; // Set a default operator if it is empty
-                    }
-                } else if (key.equals("b")) {
-                    b = Integer.parseInt(valueStr);
-                } else if (key.equals("vysl")) {
-                    vysl = Integer.parseInt(valueStr);
-                }
-            }
-
-            arrayList.add(new ItemRow(a, oper, b, vysl));
+            ItemRow itemRow = new ItemRow(a, oper, b, vysl);
+            arrayList.add(itemRow);
         }
 
         updateModel();
@@ -89,17 +58,13 @@ public class NumberTable extends JTable {
         int incorrectResults = 0;
 
         for (ItemRow item : arrayList) {
-            int calculatedResult = 0;
-
-            if (item.getOperator().equals("+")) {
-                calculatedResult = item.getA() + item.getB();
-            } else if (item.getOperator().equals("-")) {
-                calculatedResult = item.getA() - item.getB();
-            } else if (item.getOperator().equals("*")) {
-                calculatedResult = item.getA() * item.getB();
-            } else if (item.getOperator().equals("/")) {
-                calculatedResult = item.getA() / item.getB();
-            }
+            int calculatedResult = switch (item.getOperator()) {
+                case "+" -> item.getA() + item.getB();
+                case "-" -> item.getA() - item.getB();
+                case "*" -> item.getA() * item.getB();
+                case "/" -> item.getA() / item.getB();
+                default -> 0;
+            };
 
             if (calculatedResult != item.getResult()) {
                 incorrectResults++;
@@ -111,7 +76,7 @@ public class NumberTable extends JTable {
 
     private void init() {
 
-        String[] columnNames = {"Number 1", "Operator", "Number 2", "Result"};
+        String[] columnNames = {"Index", "Number 1", "Operator", "Number 2", "Result"};
 
         Object[][] data = new Object[0][columnNames.length];
 
@@ -125,11 +90,12 @@ public class NumberTable extends JTable {
         model.setRowCount(0);
 
         for (ItemRow item : arrayList) {
-            Object[] rowData = new Object[4];
-            rowData[0] = item.getA();
-            rowData[1] = item.getOperator();
-            rowData[2] = item.getB();
-            rowData[3] = item.getResult();
+            Object[] rowData = new Object[5];
+            rowData[0] = arrayList.indexOf(item) + 1;
+            rowData[1] = item.getA();
+            rowData[2] = item.getOperator();
+            rowData[3] = item.getB();
+            rowData[4] = item.getResult();
             model.addRow(rowData);
         }
     }

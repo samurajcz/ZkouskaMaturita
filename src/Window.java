@@ -8,8 +8,6 @@ public class Window extends JFrame {
         init(width, height);
 
     }
-
-    //String initValue = "[]";
     String infoLabelValue = "Vložte pole JSON do textfieldu";
 
     private void init(int width, int height) {
