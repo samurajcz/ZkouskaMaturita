@@ -81,6 +81,10 @@ public class NumberTable extends JTable {
         return correctResults;
     }
 
+    public int arraySize() {
+        return arrayList.size();
+    }
+
     public int calculateResultIncorrect() {
         int incorrectResults = 0;
 

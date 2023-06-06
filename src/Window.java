@@ -40,15 +40,18 @@ public class Window extends JFrame {
         panel.add(correctlyLabel);
         JLabel incorrectLabel = new JLabel("Incorrect: ");
         panel.add(incorrectLabel);
+        JLabel sizeLabel = new JLabel("Size: ");
+        panel.add(sizeLabel);
 
         button.addActionListener(e -> {
             System.out.println(textField.getText());
             numberTable.addToList(textField.getText());
         });
 
-        button.addActionListener(e -> {
+        buttonCal.addActionListener(e -> {
             correctlyLabel.setText("Correctly: " + numberTable.calculateResult());
             incorrectLabel.setText("Incorrect: " + numberTable.calculateResultIncorrect());
+            sizeLabel.setText("Size: " + numberTable.arraySize());
         });
 
 
