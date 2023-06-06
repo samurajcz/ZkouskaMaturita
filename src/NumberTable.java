@@ -1,5 +1,7 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,5 +100,32 @@ public class NumberTable extends JTable {
             rowData[4] = item.getResult();
             model.addRow(rowData);
         }
+    }
+
+    @Override
+    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+        Component component = super.prepareRenderer(renderer, row, column);
+
+        if (!isRowSelected(row)) {
+            int modelRow = convertRowIndexToModel(row);
+            ItemRow item = arrayList.get(modelRow);
+            int calculatedResult = switch (item.getOperator()) {
+                case "+" -> item.getA() + item.getB();
+                case "-" -> item.getA() - item.getB();
+                case "*" -> item.getA() * item.getB();
+                case "/" -> item.getA() / item.getB();
+                default -> 0;
+            };
+
+            if (calculatedResult != item.getResult()) {
+                component.setBackground(Color.RED);
+                component.setForeground(Color.WHITE);
+            } else {
+                component.setBackground(getBackground());
+                component.setForeground(getForeground());
+            }
+        }
+
+        return component;
     }
 }
