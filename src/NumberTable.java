@@ -1,12 +1,10 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.ArrayList;
 
 public class NumberTable extends JTable {
 
-    private ArrayList<Integer> arrayList = new ArrayList<>();
-    private String jsonString;
+    private ArrayList<ItemRow> arrayList = new ArrayList<>();
 
     public NumberTable() {
         init();
@@ -15,7 +13,7 @@ public class NumberTable extends JTable {
     public void addToList(String value) {
         System.out.println("přidáno do listu: " + value);
 
-        jsonString = value;
+        String jsonString = value;
 
         // Remove leading and trailing square brackets from the JSON string
         value = value.substring(1, value.length() - 1);
@@ -47,6 +45,9 @@ public class NumberTable extends JTable {
                     a = Integer.parseInt(valueStr);
                 } else if (key.equals("oper")) {
                     oper = valueStr;
+                    if (oper.isEmpty()) {
+                        oper = "+"; // Set a default operator if it is empty
+                    }
                 } else if (key.equals("b")) {
                     b = Integer.parseInt(valueStr);
                 } else if (key.equals("vysl")) {
@@ -54,8 +55,7 @@ public class NumberTable extends JTable {
                 }
             }
 
-            int result = calculateResult(a, oper, b);
-            this.arrayList.add(result);
+            arrayList.add(new ItemRow(a, oper, b, vysl));
         }
 
         updateModel();
@@ -80,7 +80,6 @@ public class NumberTable extends JTable {
     }
 
     private void init() {
-        setBackground(Color.red);
 
         String[] columnNames = {"Number 1", "Operator", "Number 2", "Result"};
 
@@ -95,35 +94,13 @@ public class NumberTable extends JTable {
         DefaultTableModel model = (DefaultTableModel) getModel();
         model.setRowCount(0);
 
-        for (Integer item : arrayList) {
-            model.addRow(new Object[]{item, null, null, null});
-        }
-
-        int rowIndex = 0;
-        for (Integer result : arrayList) {
-            int startIndex = jsonString.indexOf("{", rowIndex);
-            int endIndex = jsonString.indexOf("}", startIndex);
-
-            String object = jsonString.substring(startIndex + 1, endIndex);
-            String[] keyValuePairs = object.split(",");
-
-            for (String keyValuePair : keyValuePairs) {
-                String[] parts = keyValuePair.split(":");
-                String key = parts[0].replace("\"", "").trim();
-                String valueStr = parts[1].replace("\"", "").trim();
-
-                if (key.equals("a")) {
-                    model.setValueAt(Integer.parseInt(valueStr), rowIndex, 0);
-                } else if (key.equals("oper")) {
-                    model.setValueAt(valueStr, rowIndex, 1);
-                } else if (key.equals("b")) {
-                    model.setValueAt(Integer.parseInt(valueStr), rowIndex, 2);
-                } else if (key.equals("vysl")) {
-                    model.setValueAt(Integer.parseInt(valueStr), rowIndex, 3);
-                }
-            }
-
-            rowIndex++;
+        for (ItemRow item : arrayList) {
+            Object[] rowData = new Object[4];
+            rowData[0] = item.getA();
+            rowData[1] = item.getOperator();
+            rowData[2] = item.getB();
+            rowData[3] = item.getResult();
+            model.addRow(rowData);
         }
     }
 }
