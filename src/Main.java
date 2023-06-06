@@ -1,6 +1,12 @@
+import javax.swing.*;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        SwingUtilities.invokeLater(
+                () -> {
+                    new Window(600, 800);
+                });
+
     }
 
     // Vytvořte aplikaci s GUI, která přečte do seznamu jednoduché početní příklady na sčítání z níže uvedeného souboru.
